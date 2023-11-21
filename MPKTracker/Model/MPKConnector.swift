@@ -7,31 +7,6 @@
 
 import Foundation
 
-fileprivate struct FetchResult: Codable {
-	let result: Records
-}
-
-fileprivate struct Records: Codable {
-	let records: [Record]
-}
-
-fileprivate struct Record: Codable {
-	let Brygada: String
-	let Data_Aktualizacji: String
-	let Nazwa_Linii: String
-	let Nr_Boczny: String
-	let Nr_Rej: String
-	let Ostatnia_Pozycja_Dlugosc: Double
-	let Ostatnia_Pozycja_Szerokosc: Double
-	
-	var date: Date {
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "yyy-MM-dd HH:mm:ss.SSSSSS"
-		
-		return dateFormatter.date(from: Data_Aktualizacji)!
-	}
-}
-
 enum TempErrors: Error {
 	case notImplememnted
 }
@@ -53,22 +28,19 @@ struct MPKConnector {
 	
 	/// Gets all available tram and bus lines from MPK API
 	/// - Returns: tuple with sorted arrays of available lines
-	func getAllLines() async -> (trams: [Int], buses: [String]) {
-		let decoder = JSONDecoder()
-		let dateFormatter = DateFormatter()
-		dateFormatter.dateFormat = "yyy-MM-dd HH:mm:ss.SSSSSS"
-		decoder.dateDecodingStrategy = .formatted(dateFormatter)
-		
-		var trams: Set<Int> = ([])
+	func getAllLines() async -> (buses: [String], trams: [Int]) {
 		var buses: Set<String> = ([])
+		var trams: Set<Int> = ([])
 		
-		if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit, using: decoder) {
+		if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit) {
 			for result in results.result.records {
-				print(result.date)
-				let name = result.Nazwa_Linii
+				let name = result.lineNumber
 				
+				// not valid because of empty name
 				guard !name.isEmpty else { continue }
 				guard name != "None" else { continue }
+				// not valid because too old
+				guard result.updateDate.timeIntervalSinceNow <= 15 * 60 else { continue }
 				
 				if let number = Int(name) {
 					// all trams in Wroclaw have numbers less than 100
@@ -84,6 +56,57 @@ struct MPKConnector {
 			}
 		}
 		
-		return (trams.sorted(), buses.sorted())
+		return (buses.sorted(), trams.sorted())
+	}
+}
+
+// MARK: - Data structs
+
+fileprivate struct FetchResult: Codable {
+	let result: Records
+}
+
+fileprivate struct Records: Codable {
+	let records: [Record]
+}
+
+fileprivate struct Record: Codable {
+	private enum CodingKeys: CodingKey {
+		case Brygada
+		case Data_Aktualizacji
+		case Nazwa_Linii
+		case Nr_Boczny
+		case Nr_Rej
+		case Ostatnia_Pozycja_Dlugosc
+		case Ostatnia_Pozycja_Szerokosc
+	}
+	
+	let latitude: Double
+	let lineNumber: String
+	let longitude: Double
+	let plateNumber: String
+	let sideNumber: String
+	let squad: String
+	let updateDate: Date
+	
+	init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		self.squad = try container.decode(String.self, forKey: .Brygada)
+		
+		self.lineNumber = try container.decode(String.self, forKey: .Nazwa_Linii)
+		self.sideNumber = try container.decode(String.self, forKey: .Nr_Boczny)
+		self.plateNumber = try container.decode(String.self, forKey: .Nr_Rej)
+		self.longitude = try container.decode(Double.self, forKey: .Ostatnia_Pozycja_Dlugosc)
+		self.latitude = try container.decode(Double.self, forKey: .Ostatnia_Pozycja_Szerokosc)
+		
+		let dateString = try container.decode(String.self, forKey: .Data_Aktualizacji)
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyy-MM-dd HH:mm:ss.SSSSSS"
+		self.updateDate = dateFormatter.date(from: dateString)!
+	}
+	
+	func encode(to encoder: Encoder) throws {
+		// TODO: implement
+		fatalError("Not implemented")
 	}
 }
