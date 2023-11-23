@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+	@StateObject var mpkConnector = MPKConnector()
+	
     var body: some View {
 		TabView {
 			LiveMap()
@@ -16,6 +18,7 @@ struct ContentView: View {
 			VehiclesView()
 				.tabItem { Label("Vehicles", systemImage: "lightrail") }
 		}
+		.environmentObject(mpkConnector)
     }
 }
 

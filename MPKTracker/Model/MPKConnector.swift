@@ -11,9 +11,11 @@ enum TempErrors: Error {
 	case notImplememnted
 }
 
-struct MPKConnector {
+class MPKConnector: ObservableObject {
 	private let urlBase = "https://www.wroclaw.pl/open-data/api/action/datastore_search?resource_id=17308285-3977-42f7-81b7-fdd168c210a2"
 	private let urlLimit = "&limit=1000"
+	
+	var selectedLines: [String] = ["1", "13"]
 	
 	private func fetchData<T: Codable>(from link: String, using decoder: JSONDecoder = JSONDecoder()) async throws -> T {
 		guard let safeUrl = URL(string: link) else { throw TempErrors.notImplememnted }
@@ -57,6 +59,20 @@ struct MPKConnector {
 		}
 		
 		return (buses.sorted(), trams.sorted())
+	}
+	
+	func getSampleCoords() async -> [Tram] {
+		var toReturn: [Tram] = []
+		
+		for selectedLine in selectedLines {
+			if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit + "&filters={\"Nazwa_Linii\":\"\(selectedLine)\"}") {
+				for retult in results.result.records {
+					toReturn.append(Tram(lineNumber: selectedLine, latitude: retult.latitude, longitude: retult.longitude))
+				}
+			}
+		}
+		
+		return toReturn
 	}
 }
 

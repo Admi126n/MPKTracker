@@ -14,6 +14,9 @@
 		6601221F2B0D0AE1002CE385 /* LiveMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6601221E2B0D0AE1002CE385 /* LiveMap.swift */; };
 		660122212B0D0BE6002CE385 /* VehiclesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660122202B0D0BE6002CE385 /* VehiclesView.swift */; };
 		660122232B0D0C9D002CE385 /* MPKConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660122222B0D0C9D002CE385 /* MPKConnector.swift */; };
+		66039EC42B0FBCBF00ED57E3 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66039EC32B0FBCBF00ED57E3 /* Vehicle.swift */; };
+		66039EC62B0FBD9000ED57E3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66039EC52B0FBD9000ED57E3 /* Bus.swift */; };
+		66039EC82B0FC13D00ED57E3 /* Tram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66039EC72B0FC13D00ED57E3 /* Tram.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +28,9 @@
 		6601221E2B0D0AE1002CE385 /* LiveMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMap.swift; sourceTree = "<group>"; };
 		660122202B0D0BE6002CE385 /* VehiclesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VehiclesView.swift; sourceTree = "<group>"; };
 		660122222B0D0C9D002CE385 /* MPKConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPKConnector.swift; sourceTree = "<group>"; };
+		66039EC32B0FBCBF00ED57E3 /* Vehicle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
+		66039EC52B0FBD9000ED57E3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
+		66039EC72B0FC13D00ED57E3 /* Tram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tram.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +94,9 @@
 			isa = PBXGroup;
 			children = (
 				660122222B0D0C9D002CE385 /* MPKConnector.swift */,
+				66039EC32B0FBCBF00ED57E3 /* Vehicle.swift */,
+				66039EC52B0FBD9000ED57E3 /* Bus.swift */,
+				66039EC72B0FC13D00ED57E3 /* Tram.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -162,6 +171,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66039EC62B0FBD9000ED57E3 /* Bus.swift in Sources */,
+				66039EC82B0FC13D00ED57E3 /* Tram.swift in Sources */,
+				66039EC42B0FBCBF00ED57E3 /* Vehicle.swift in Sources */,
 				660122122B0D09E5002CE385 /* ContentView.swift in Sources */,
 				660122102B0D09E5002CE385 /* MPKTrackerApp.swift in Sources */,
 				660122232B0D0C9D002CE385 /* MPKConnector.swift in Sources */,

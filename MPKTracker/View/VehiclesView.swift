@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct VehiclesView: View {
+	@EnvironmentObject var connector: MPKConnector
 	@State private var buses: [String] = []
 	@State private var trams: [Int] = []
 	
-    var body: some View {
+	var body: some View {
 		VStack {
 			Text("Here you can choose which buses and trams you want to see on the map")
 				.multilineTextAlignment(.center)
 			
 			Button("Fetch data") {
-				let connector = MPKConnector()
 				Task {
 					let lines = await connector.getAllLines()
 					
@@ -31,20 +31,41 @@ struct VehiclesView: View {
 			List {
 				Section("Buses") {
 					ForEach(buses, id: \.self) { bus in
-						Text(bus)
+						Button {
+							if connector.selectedLines.contains(bus) {
+								if let index = connector.selectedLines.firstIndex(of: bus) {
+									connector.selectedLines.remove(at: index)
+								}
+							} else {
+								connector.selectedLines.append(bus)
+							}
+						} label: {
+							Text(bus)
+						}
 					}
 				}
 				
 				Section("Trams") {
 					ForEach(trams, id: \.self) { tram in
-						Text("\(tram)")
+						Button {
+							if connector.selectedLines.contains("\(tram)") {
+								if let index = connector.selectedLines.firstIndex(of: "\(tram)") {
+									connector.selectedLines.remove(at: index)
+								}
+							} else {
+								connector.selectedLines.append("\(tram)")
+							}
+						} label: {
+							Text("\(tram)")
+						}
 					}
 				}
 			}
 		}
-    }
+	}
 }
 
 #Preview {
-    VehiclesView()
+	VehiclesView()
+		.environmentObject(MPKConnector())
 }
