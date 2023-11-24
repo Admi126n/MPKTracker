@@ -11,6 +11,11 @@ enum TempErrors: Error {
 	case notImplememnted
 }
 
+fileprivate enum VehicleType {
+	case bus
+	case tram
+}
+
 class MPKConnector: ObservableObject {
 	// TODO: maybe store this as enums?
 	private let urlBase = "https://www.wroclaw.pl/open-data/api/action/datastore_search?resource_id=17308285-3977-42f7-81b7-fdd168c210a2"
@@ -29,6 +34,19 @@ class MPKConnector: ObservableObject {
 		return decoded
 	}
 	
+	private func check(line type: String) -> VehicleType {
+		if let number = Int(type) {
+			// all trams in Wroclaw have numbers less than 100
+			if number < 100 {
+				return .tram
+			} else {
+				return .bus
+			}
+		} else {
+			// in Wroclaw only buses have letters as names
+			return .bus
+		}
+	}
 	
 	/// Gets all available tram and bus lines from MPK API
 	/// - Returns: tuple with sorted arrays of available lines
@@ -47,16 +65,11 @@ class MPKConnector: ObservableObject {
 				// not valid because too old
 				guard result.updateDate.timeIntervalSinceNow <= 15 * 60 else { continue }
 				
-				if let number = Int(name) {
-					// all trams in Wroclaw have numbers less than 100
-					if number < 100 {
-						trams.insert(number)
-					} else {
-						buses.insert(name)
-					}
-				} else {
-					// in Wroclaw only buses have letters as names
+				switch check(line: name) {
+				case .bus:
 					buses.insert(name)
+				case .tram:
+					trams.insert(Int(name)!)
 				}
 			}
 		}
@@ -64,18 +77,22 @@ class MPKConnector: ObservableObject {
 		return (buses.sorted(), trams.sorted())
 	}
 	
-	func getSampleCoords() async -> [Tram] {
-		var toReturn: [Tram] = []
+	func getVehicles() async -> [Vehicle] {
+		var result: [Vehicle] = []
 		
-		for selectedLine in selectedLines {
-			if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit + "&filters={\"Nazwa_Linii\":\"\(selectedLine)\"}") {
-				for retult in results.result.records {
-					toReturn.append(Tram(line: selectedLine, sideNumber: "", lat: retult.latitude, lon: retult.longitude))
+		for line in selectedLines {
+			if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit + "&filters={\"Nazwa_Linii\":\"\(line)\"}") {
+				for r in results.result.records {
+					switch check(line: line) {
+					case .bus:
+						result.append(Bus(line: r.lineNumber, sideNumber: r.sideNumber, plate: r.plateNumber, lat: r.latitude, lon: r.longitude))
+					case .tram:
+						result.append(Tram(line: r.lineNumber, sideNumber: r.sideNumber, lat: r.latitude, lon: r.longitude))
+					}
 				}
 			}
 		}
-		
-		return toReturn
+		return result
 	}
 }
 

@@ -9,30 +9,33 @@ import MapKit
 import SwiftUI
 
 struct LiveMap: View {
+	let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+	
 	@EnvironmentObject var connector: MPKConnector
-	@State private var trams: [Tram] = []
+	@State private var vehicles: [Vehicle] = []
 	@State private var disableButton = false
 	
     var body: some View {
 		NavigationStack {
 			Map {
-				ForEach(trams) { el in
-					Marker(coordinate: CLLocationCoordinate2D(
-						latitude: el.latitude,
-						longitude: el.longitude)
-					) {
-						Text(el.lineNumber)
+				ForEach(vehicles) { v in
+					Annotation(v.lineNumber, coordinate: v.coordinates) {
+						ZStack {
+							Color.secondary.opacity(0.7)
+								.frame(width: 44, height: 44)
+								.clipShape(.rect(cornerRadius: 15))
+							
+							Image(systemName: v.symbolName)
+						}
 					}
 				}
 			}
 			.toolbar {
 				ToolbarItem(placement: .topBarTrailing) {
 					Button("Refresh", systemImage: "arrow.clockwise") {
-						disableButton = true
 						Task {
 							await refresh()
 						}
-						disableButton = false
 					}
 					.disabled(disableButton)
 				}
@@ -43,14 +46,22 @@ struct LiveMap: View {
 				await refresh()
 			}
 		}
+		.onReceive(timer) { _ in
+			Task {
+				await refresh()
+			}
+		}
     }
 	
 	private func refresh() async {
-		let result = await connector.getSampleCoords()
-		
+		let result = await connector.getVehicles()
+		disableButton = true
 		Task { @MainActor in
-			trams = result
+			withAnimation {
+				vehicles = result
+			}
 		}
+		disableButton = false
 	}
 }
 
@@ -58,3 +69,4 @@ struct LiveMap: View {
     LiveMap()
 		.environmentObject(MPKConnector())
 }
+

@@ -13,8 +13,15 @@ class Vehicle: Identifiable {
 	private(set) var id: UUID
 	private(set) var latitude: Double
 	private(set) var lineNumber: String
-	private(set) var longitude: Double
-	private(set) var sideNumber: String
+	private var longitude: Double
+	private var sideNumber: String
+	
+	var coordinates: CLLocationCoordinate2D {
+		return CLLocationCoordinate2D(
+			latitude: latitude,
+			longitude: longitude
+		)
+	}
 	
 	init(latitude: Double, lineNumber: String, longitude: Double, sideNumber: String, _ symbolName: String = "questionmark.circle.fill") {
 		self.id = UUID()
