@@ -54,7 +54,7 @@ struct LiveMap: View {
     }
 	
 	private func refresh() async {
-		let result = await connector.getVehicles()
+		let result = await connector.getSelectedVehicles()
 		disableButton = true
 		Task { @MainActor in
 			withAnimation {

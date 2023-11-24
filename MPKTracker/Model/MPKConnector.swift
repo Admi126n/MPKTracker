@@ -11,19 +11,31 @@ enum TempErrors: Error {
 	case notImplememnted
 }
 
-fileprivate enum VehicleType {
+enum VehicleType {
 	case bus
 	case tram
 }
 
 class MPKConnector: ObservableObject {
-	// TODO: maybe store this as enums?
+	private let coordMargin = 1.0
+	private let cityLat = 51.0
+	private let cityLon = 17.0
 	private let urlBase = "https://www.wroclaw.pl/open-data/api/action/datastore_search?resource_id=17308285-3977-42f7-81b7-fdd168c210a2"
 	private let urlLimit = "&limit=1000"
 	
-	// TODO: temp solution
 	var selectedLines: [String] = []
 	
+	private var dateMargin: Date {
+		Date.now.addingTimeInterval(-15 * 60)
+	}
+	
+	/// Creates filter part of the url
+	private func urlFilter(for line: String) -> String {
+		"&filters={\"Nazwa_Linii\":\"\(line)\"}"
+	}
+	
+	
+	/// Generic method for fetching data from given link
 	private func fetchData<T: Codable>(from link: String, using decoder: JSONDecoder = JSONDecoder()) async throws -> T {
 		guard let safeUrl = URL(string: link) else { throw TempErrors.notImplememnted }
 		
@@ -34,7 +46,11 @@ class MPKConnector: ObservableObject {
 		return decoded
 	}
 	
-	private func check(line type: String) -> VehicleType {
+	
+	/// Checks vehicle type based on line number
+	/// - Parameter type: line number
+	/// - Returns: vehicle type
+	private func get(line type: String) -> VehicleType {
 		if let number = Int(type) {
 			// all trams in Wroclaw have numbers less than 100
 			if number < 100 {
@@ -48,6 +64,31 @@ class MPKConnector: ObservableObject {
 		}
 	}
 	
+	
+	/// Validates given name
+	/// - Returns: false if name is empty or equal to 'None'
+	private func validate(line name: String) -> Bool {
+		!(name.isEmpty || name == "None")
+	}
+	
+	
+	/// Validates given update date
+	/// - Returns: false if date is older than margin
+	private func validate(update date: Date) -> Bool {
+		date >= dateMargin
+	}
+	
+	
+	/// Validates given coordinates
+	/// - Returns: false if coordinates are too small or too big
+	private func validate(lattitude: Double, longitude: Double) -> Bool {
+		return lattitude >= cityLat - coordMargin
+		&& lattitude <= cityLat + coordMargin
+		&& longitude >= cityLon - coordMargin
+		&& longitude <= cityLon + coordMargin
+	}
+	
+	
 	/// Gets all available tram and bus lines from MPK API
 	/// - Returns: tuple with sorted arrays of available lines
 	func getAllLines() async -> (buses: [String], trams: [Int]) {
@@ -58,14 +99,11 @@ class MPKConnector: ObservableObject {
 			for result in results.result.records {
 				let name = result.lineNumber
 				
-				// TODO: filter also by coordinates
-				// not valid because of empty name
-				guard !name.isEmpty else { continue }
-				guard name != "None" else { continue }
-				// not valid because too old
-				guard result.updateDate.timeIntervalSinceNow <= 15 * 60 else { continue }
+				guard validate(line: name) else { continue }
+				guard validate(update: result.updateDate) else { continue }
+				guard validate(lattitude: result.latitude, longitude: result.longitude) else { continue }
 				
-				switch check(line: name) {
+				switch get(line: name) {
 				case .bus:
 					buses.insert(name)
 				case .tram:
@@ -77,13 +115,19 @@ class MPKConnector: ObservableObject {
 		return (buses.sorted(), trams.sorted())
 	}
 	
-	func getVehicles() async -> [Vehicle] {
+	
+	/// Fetches all selected vehicles data
+	func getSelectedVehicles() async -> [Vehicle] {
 		var result: [Vehicle] = []
 		
 		for line in selectedLines {
-			if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit + "&filters={\"Nazwa_Linii\":\"\(line)\"}") {
+			if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit + urlFilter(for: line)) {
 				for r in results.result.records {
-					switch check(line: line) {
+					guard validate(line: r.lineNumber) else { continue }
+					guard validate(update: r.updateDate) else { continue }
+					guard validate(lattitude: r.latitude, longitude: r.longitude) else { continue }
+					
+					switch get(line: line) {
 					case .bus:
 						result.append(Bus(line: r.lineNumber, sideNumber: r.sideNumber, plate: r.plateNumber, lat: r.latitude, lon: r.longitude))
 					case .tram:
@@ -103,12 +147,11 @@ fileprivate struct FetchResult: Codable {
 }
 
 fileprivate struct Records: Codable {
-	let records: [Record]
+	let records: [FetchedVehicle]
 }
 
-fileprivate struct Record: Codable {
+fileprivate struct FetchedVehicle: Codable {
 	private enum CodingKeys: CodingKey {
-//		case Brygada  // i think i won't use it
 		case Data_Aktualizacji
 		case Nazwa_Linii
 		case Nr_Boczny
@@ -122,12 +165,10 @@ fileprivate struct Record: Codable {
 	let longitude: Double
 	let plateNumber: String
 	let sideNumber: String
-//	let squad: String
 	let updateDate: Date
 	
 	init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
-//		self.squad = try container.decode(String.self, forKey: .Brygada)
 		
 		self.lineNumber = try container.decode(String.self, forKey: .Nazwa_Linii)
 		self.sideNumber = try container.decode(String.self, forKey: .Nr_Boczny)
@@ -138,12 +179,56 @@ fileprivate struct Record: Codable {
 		let dateString = try container.decode(String.self, forKey: .Data_Aktualizacji)
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = "yyy-MM-dd HH:mm:ss.SSSSSS"
-		// TODO: check this coalesing. Now it sets date older than 15 mins
+		
 		self.updateDate = dateFormatter.date(from: dateString) ?? Date(timeInterval: -16 * 60, since: .now)
 	}
 	
 	func encode(to encoder: Encoder) throws {
-		// TODO: implement
-		fatalError("Not implemented")
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		
+		try container.encode(latitude, forKey: .Ostatnia_Pozycja_Szerokosc)
+		try container.encode(lineNumber, forKey: .Nazwa_Linii)
+		try container.encode(longitude, forKey: .Ostatnia_Pozycja_Dlugosc)
+		try container.encode(plateNumber, forKey: .Nr_Rej)
+		try container.encode(sideNumber, forKey: .Nr_Boczny)
+		try container.encode(updateDate, forKey: .Data_Aktualizacji)
 	}
 }
+
+// MARK: - getters for tests
+
+#if DEBUG
+extension MPKConnector {
+	var testCityLat: Double {
+		cityLat
+	}
+	
+	var testCityLon: Double {
+		cityLon
+	}
+	
+	var testCoordMargin: Double {
+		coordMargin
+	}
+	
+	var testDateMargin: Date {
+		dateMargin
+	}
+	
+	func testCheck(line type: String) -> VehicleType {
+		get(line: type)
+	}
+	
+	func testValidate(line: String) -> Bool {
+		validate(line: line)
+	}
+	
+	func testValidate(update date: Date) -> Bool {
+		validate(update: date)
+	}
+	
+	func testValidate(lattitude: Double, longitude: Double) -> Bool {
+		validate(lattitude: lattitude, longitude: longitude)
+	}
+}
+#endif
