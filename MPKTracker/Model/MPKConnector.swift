@@ -12,10 +12,12 @@ enum TempErrors: Error {
 }
 
 class MPKConnector: ObservableObject {
+	// TODO: maybe store this as enums?
 	private let urlBase = "https://www.wroclaw.pl/open-data/api/action/datastore_search?resource_id=17308285-3977-42f7-81b7-fdd168c210a2"
 	private let urlLimit = "&limit=1000"
 	
-	var selectedLines: [String] = ["1", "13"]
+	// TODO: temp solution
+	var selectedLines: [String] = []
 	
 	private func fetchData<T: Codable>(from link: String, using decoder: JSONDecoder = JSONDecoder()) async throws -> T {
 		guard let safeUrl = URL(string: link) else { throw TempErrors.notImplememnted }
@@ -38,6 +40,7 @@ class MPKConnector: ObservableObject {
 			for result in results.result.records {
 				let name = result.lineNumber
 				
+				// TODO: filter also by coordinates
 				// not valid because of empty name
 				guard !name.isEmpty else { continue }
 				guard name != "None" else { continue }
@@ -67,7 +70,7 @@ class MPKConnector: ObservableObject {
 		for selectedLine in selectedLines {
 			if let results: FetchResult = try? await fetchData(from: urlBase + urlLimit + "&filters={\"Nazwa_Linii\":\"\(selectedLine)\"}") {
 				for retult in results.result.records {
-					toReturn.append(Tram(lineNumber: selectedLine, latitude: retult.latitude, longitude: retult.longitude))
+					toReturn.append(Tram(line: selectedLine, sideNumber: "", lat: retult.latitude, lon: retult.longitude))
 				}
 			}
 		}
@@ -88,7 +91,7 @@ fileprivate struct Records: Codable {
 
 fileprivate struct Record: Codable {
 	private enum CodingKeys: CodingKey {
-		case Brygada
+//		case Brygada  // i think i won't use it
 		case Data_Aktualizacji
 		case Nazwa_Linii
 		case Nr_Boczny
@@ -102,12 +105,12 @@ fileprivate struct Record: Codable {
 	let longitude: Double
 	let plateNumber: String
 	let sideNumber: String
-	let squad: String
+//	let squad: String
 	let updateDate: Date
 	
 	init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
-		self.squad = try container.decode(String.self, forKey: .Brygada)
+//		self.squad = try container.decode(String.self, forKey: .Brygada)
 		
 		self.lineNumber = try container.decode(String.self, forKey: .Nazwa_Linii)
 		self.sideNumber = try container.decode(String.self, forKey: .Nr_Boczny)
@@ -118,7 +121,8 @@ fileprivate struct Record: Codable {
 		let dateString = try container.decode(String.self, forKey: .Data_Aktualizacji)
 		let dateFormatter = DateFormatter()
 		dateFormatter.dateFormat = "yyy-MM-dd HH:mm:ss.SSSSSS"
-		self.updateDate = dateFormatter.date(from: dateString)!
+		// TODO: check this coalesing. Now it sets date older than 15 mins
+		self.updateDate = dateFormatter.date(from: dateString) ?? Date(timeInterval: -16 * 60, since: .now)
 	}
 	
 	func encode(to encoder: Encoder) throws {

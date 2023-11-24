@@ -8,21 +8,12 @@
 import MapKit
 import SwiftUI
 
-struct Bus: Vehicle {
-	var id = UUID()
-	let latitude: Double
-	let lineNumber: String
-	let longitude: Double
-	var marker: Marker<Label<Text, Image>>
+final class Bus: Vehicle {
+	private(set) var plate: String
 	
-	init(lineNumber: String, latitude: Double, longitude: Double) {
-		self.lineNumber = lineNumber
-		self.latitude = latitude
-		self.longitude = longitude
-		self.marker = Marker(
-			lineNumber,
-			systemImage: "bus.fill",
-			coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-		)
+	init(line lineNumber: String, sideNumber: String, plate: String, lat latitude: Double, lon longitude: Double) {
+		self.plate = plate
+		
+		super.init(latitude: latitude, lineNumber: lineNumber, longitude: longitude, sideNumber: sideNumber, "bus.fill")
 	}
 }

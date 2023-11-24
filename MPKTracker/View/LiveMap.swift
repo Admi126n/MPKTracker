@@ -16,8 +16,13 @@ struct LiveMap: View {
     var body: some View {
 		NavigationStack {
 			Map {
-				ForEach(trams) { tram in
-					tram.marker
+				ForEach(trams) { el in
+					Marker(coordinate: CLLocationCoordinate2D(
+						latitude: el.latitude,
+						longitude: el.longitude)
+					) {
+						Text(el.lineNumber)
+					}
 				}
 			}
 			.toolbar {

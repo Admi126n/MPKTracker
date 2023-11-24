@@ -7,57 +7,70 @@
 
 import SwiftUI
 
+fileprivate struct LineButton: View {
+	let title: String
+	
+	@EnvironmentObject var connector: MPKConnector
+	@State private var selected = false
+	
+	var body: some View {
+		Button {
+			if connector.selectedLines.contains(String(title)) {
+				if let index = connector.selectedLines.firstIndex(of: String(title)) {
+					connector.selectedLines.remove(at: index)
+				}
+			} else {
+				connector.selectedLines.append(String(title))
+			}
+			selected.toggle()
+		} label: {
+			Text(title)
+				.font(.headline)
+				.padding(5)
+				.frame(width: 70)
+				.background(selected ? .green : .gray)
+				.clipShape(.rect(cornerRadius: 10))
+				.tint(.white)
+		}
+	}
+}
+
 struct VehiclesView: View {
 	@EnvironmentObject var connector: MPKConnector
 	@State private var buses: [String] = []
 	@State private var trams: [Int] = []
 	
 	var body: some View {
-		VStack {
-			Text("Here you can choose which buses and trams you want to see on the map")
-				.multilineTextAlignment(.center)
-			
-			Button("Fetch data") {
+		NavigationStack {
+			ScrollView {
+				Label("Buses", systemImage: "bus.fill")
+					.font(.title)
+				
+				LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {
+					ForEach(buses, id: \.self) { bus in
+						LineButton(title: bus)
+					}
+				}
+				.padding(.horizontal)
+				
+				Label("Trams", systemImage: "lightrail")
+					.font(.title)
+				
+				LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {
+					ForEach(trams, id: \.self) { tram in
+						LineButton(title: "\(tram)")
+					}
+				}
+				.padding(.horizontal)
+				
+			}
+			.onAppear {
 				Task {
-					let lines = await connector.getAllLines()
+					let temp = await connector.getAllLines()
 					
 					Task { @MainActor in
-						buses = lines.buses
-						trams = lines.trams
-					}
-				}
-			}
-			
-			List {
-				Section("Buses") {
-					ForEach(buses, id: \.self) { bus in
-						Button {
-							if connector.selectedLines.contains(bus) {
-								if let index = connector.selectedLines.firstIndex(of: bus) {
-									connector.selectedLines.remove(at: index)
-								}
-							} else {
-								connector.selectedLines.append(bus)
-							}
-						} label: {
-							Text(bus)
-						}
-					}
-				}
-				
-				Section("Trams") {
-					ForEach(trams, id: \.self) { tram in
-						Button {
-							if connector.selectedLines.contains("\(tram)") {
-								if let index = connector.selectedLines.firstIndex(of: "\(tram)") {
-									connector.selectedLines.remove(at: index)
-								}
-							} else {
-								connector.selectedLines.append("\(tram)")
-							}
-						} label: {
-							Text("\(tram)")
-						}
+						buses = temp.buses
+						trams = temp.trams
 					}
 				}
 			}
