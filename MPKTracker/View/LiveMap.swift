@@ -32,7 +32,7 @@ struct LiveMap: View {
 			}
 			.toolbar {
 				ToolbarItem(placement: .topBarTrailing) {
-					Button("Refresh", systemImage: "arrow.clockwise") {
+					Button(I18n.refresh, systemImage: "arrow.clockwise") {
 						Task {
 							await refresh()
 						}

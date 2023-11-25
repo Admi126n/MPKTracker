@@ -43,7 +43,7 @@ struct VehiclesView: View {
 	var body: some View {
 		NavigationStack {
 			ScrollView {
-				Label("Buses", systemImage: "bus.fill")
+				Label(I18n.buses, systemImage: "bus.fill")
 					.font(.title)
 				
 				LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {
@@ -53,7 +53,7 @@ struct VehiclesView: View {
 				}
 				.padding(.horizontal)
 				
-				Label("Trams", systemImage: "lightrail")
+				Label(I18n.trams, systemImage: "lightrail")
 					.font(.title)
 				
 				LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))]) {

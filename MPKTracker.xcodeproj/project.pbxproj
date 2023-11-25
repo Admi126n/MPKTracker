@@ -17,6 +17,8 @@
 		66039EC42B0FBCBF00ED57E3 /* Vehicle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66039EC32B0FBCBF00ED57E3 /* Vehicle.swift */; };
 		66039EC62B0FBD9000ED57E3 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66039EC52B0FBD9000ED57E3 /* Bus.swift */; };
 		66039EC82B0FC13D00ED57E3 /* Tram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66039EC72B0FC13D00ED57E3 /* Tram.swift */; };
+		663E405E2B128C58009CF7F4 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 663E405D2B128C58009CF7F4 /* Localizable.xcstrings */; };
+		663E40612B128CA7009CF7F4 /* Internationalizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663E40602B128CA7009CF7F4 /* Internationalizations.swift */; };
 		668247C12B113B8F0068FD06 /* MPKTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668247C02B113B8F0068FD06 /* MPKTrackerTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +44,8 @@
 		66039EC32B0FBCBF00ED57E3 /* Vehicle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vehicle.swift; sourceTree = "<group>"; };
 		66039EC52B0FBD9000ED57E3 /* Bus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
 		66039EC72B0FC13D00ED57E3 /* Tram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tram.swift; sourceTree = "<group>"; };
+		663E405D2B128C58009CF7F4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		663E40602B128CA7009CF7F4 /* Internationalizations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Internationalizations.swift; sourceTree = "<group>"; };
 		668247BE2B113B8F0068FD06 /* MPKTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MPKTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668247C02B113B8F0068FD06 /* MPKTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPKTrackerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				6601220F2B0D09E5002CE385 /* MPKTrackerApp.swift */,
+				663E405F2B128C92009CF7F4 /* Localization */,
 				660122242B0D0CA6002CE385 /* Model */,
 				6601221D2B0D0AB3002CE385 /* View */,
 				660122132B0D09E6002CE385 /* Assets.xcassets */,
@@ -121,6 +126,15 @@
 				66039EC72B0FC13D00ED57E3 /* Tram.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		663E405F2B128C92009CF7F4 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				663E405D2B128C58009CF7F4 /* Localizable.xcstrings */,
+				663E40602B128CA7009CF7F4 /* Internationalizations.swift */,
+			);
+			path = Localization;
 			sourceTree = "<group>";
 		};
 		668247BF2B113B8F0068FD06 /* MPKTrackerTests */ = {
@@ -195,6 +209,7 @@
 			knownRegions = (
 				en,
 				Base,
+				pl,
 			);
 			mainGroup = 660122032B0D09E5002CE385;
 			productRefGroup = 6601220D2B0D09E5002CE385 /* Products */;
@@ -214,6 +229,7 @@
 			files = (
 				660122172B0D09E6002CE385 /* Preview Assets.xcassets in Resources */,
 				660122142B0D09E6002CE385 /* Assets.xcassets in Resources */,
+				663E405E2B128C58009CF7F4 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66039EC62B0FBD9000ED57E3 /* Bus.swift in Sources */,
+				663E40612B128CA7009CF7F4 /* Internationalizations.swift in Sources */,
 				66039EC82B0FC13D00ED57E3 /* Tram.swift in Sources */,
 				66039EC42B0FBCBF00ED57E3 /* Vehicle.swift in Sources */,
 				660122122B0D09E5002CE385 /* ContentView.swift in Sources */,

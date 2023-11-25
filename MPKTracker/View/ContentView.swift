@@ -13,10 +13,10 @@ struct ContentView: View {
     var body: some View {
 		TabView {
 			LiveMap()
-				.tabItem { Label("Live map", systemImage: "map") }
+				.tabItem { Label(I18n.map, systemImage: "map") }
 			
 			VehiclesView()
-				.tabItem { Label("Vehicles", systemImage: "lightrail") }
+				.tabItem { Label(I18n.vehicles, systemImage: "lightrail") }
 		}
 		.environmentObject(mpkConnector)
     }
