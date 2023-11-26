@@ -11,9 +11,9 @@ import SwiftUI
 final class Bus: Vehicle {
 	private(set) var plate: String
 	
-	init(line lineNumber: String, sideNumber: String, plate: String, lat latitude: Double, lon longitude: Double) {
+	init(line lineNumber: String, sideNumber: String, plate: String, updateDate: Date, lat latitude: Double, lon longitude: Double) {
 		self.plate = plate
 		
-		super.init(latitude: latitude, lineNumber: lineNumber, longitude: longitude, sideNumber: sideNumber, "bus.fill")
+		super.init(latitude: latitude, lineNumber: lineNumber, longitude: longitude, sideNumber: sideNumber, updateDate: updateDate, "bus.fill")
 	}
 }
