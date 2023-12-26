@@ -21,6 +21,7 @@
 		663E40612B128CA7009CF7F4 /* Internationalizations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663E40602B128CA7009CF7F4 /* Internationalizations.swift */; };
 		665DFCF32B13FD8A00CB1EF3 /* FetchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665DFCF22B13FD8A00CB1EF3 /* FetchResult.swift */; };
 		668247C12B113B8F0068FD06 /* MPKTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668247C02B113B8F0068FD06 /* MPKTrackerTests.swift */; };
+		66CBF1952B3B61F700C4D88A /* LocationFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CBF1942B3B61F700C4D88A /* LocationFetcher.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		665DFCF22B13FD8A00CB1EF3 /* FetchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchResult.swift; sourceTree = "<group>"; };
 		668247BE2B113B8F0068FD06 /* MPKTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MPKTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668247C02B113B8F0068FD06 /* MPKTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPKTrackerTests.swift; sourceTree = "<group>"; };
+		66CBF1942B3B61F700C4D88A /* LocationFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFetcher.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 				66039EC52B0FBD9000ED57E3 /* Bus.swift */,
 				66039EC72B0FC13D00ED57E3 /* Tram.swift */,
 				665DFCF22B13FD8A00CB1EF3 /* FetchResult.swift */,
+				66CBF1942B3B61F700C4D88A /* LocationFetcher.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -194,7 +197,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					6601220B2B0D09E5002CE385 = {
 						CreatedOnToolsVersion = 15.0.1;
@@ -254,6 +257,7 @@
 				665DFCF32B13FD8A00CB1EF3 /* FetchResult.swift in Sources */,
 				663E40612B128CA7009CF7F4 /* Internationalizations.swift in Sources */,
 				66039EC82B0FC13D00ED57E3 /* Tram.swift in Sources */,
+				66CBF1952B3B61F700C4D88A /* LocationFetcher.swift in Sources */,
 				66039EC42B0FBCBF00ED57E3 /* Vehicle.swift in Sources */,
 				660122122B0D09E5002CE385 /* ContentView.swift in Sources */,
 				660122102B0D09E5002CE385 /* MPKTrackerApp.swift in Sources */,
@@ -287,6 +291,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -350,6 +355,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -409,9 +415,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MPKTracker/Preview Content\"";
-				DEVELOPMENT_TEAM = 474G49AKB2;
+				DEVELOPMENT_TEAM = 8M6629LY4U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your localization to mark you on the map";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -422,7 +429,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.admi126n.MPKTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.admi126n.dev.MPKTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -438,9 +445,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MPKTracker/Preview Content\"";
-				DEVELOPMENT_TEAM = 474G49AKB2;
+				DEVELOPMENT_TEAM = 8M6629LY4U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your localization to mark you on the map";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -451,7 +459,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.admi126n.MPKTracker;
+				PRODUCT_BUNDLE_IDENTIFIER = com.admi126n.dev.MPKTracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

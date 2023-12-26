@@ -19,6 +19,7 @@ extension View {
 struct LiveMap: View {
 	let refreshTImer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
 	let updateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+	let locationFetcher = LocationFetcher()
 	
 	@EnvironmentObject var connector: MPKConnector
 	@State private var disableButton = false
@@ -29,6 +30,15 @@ struct LiveMap: View {
 	var body: some View {
 		NavigationStack {
 			Map {
+				Annotation(coordinate: locationFetcher.lastKnownLocation ?? CLLocationCoordinate2D(latitude: 0, longitude: 0)) {
+					Circle()
+						.foregroundStyle(.blue)
+						.opacity(0.8)
+						.frame(width: 30)
+				} label: { 
+					Text("You are here")
+				}
+				
 				ForEach(vehicles) { v in
 					Annotation(v.lineNumber, coordinate: v.coordinates) {
 						ZStack {
@@ -60,6 +70,8 @@ struct LiveMap: View {
 			}
 		}
 		.onAppear {
+			locationFetcher.start()
+			
 			Task {
 				await refresh()
 			}
